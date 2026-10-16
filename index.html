@@ -1,0 +1,978 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="robots" content="noindex"><meta name="theme-color" content="#14181D"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Paulie"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><title>Paulie Recomp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Libre+Franklin:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: phone-first single column. Masthead, today's session, the Hevy/Strava ask, four
+   goals, then the block as four weeks of tappable day rows that open into the full session.
+   Anything with a folded corner opens to show why it's written that way. Intensity uses
+   bumper-plate colors, same as Recomp. */
+:root {
+  --bg: #F3F4F6; --surface: #FFFFFF; --sunk: #EAECEF; --ink: #14181D; --ink-2: #5C6570; --line: #DCE0E5;
+  --flap: #E2E6EA; --reveal: #14181D; --reveal-ink: #FFFFFF;
+  --heavy: #D23A2E; --volume: #2A62C9; --interval: #D29C00; --legs: #2E8A46; --rest: #A6AEB7;
+  --good: #1F7A45; --warn: #A86A12; --bad: #BF3528;
+  --display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --text: "Libre Franklin", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111418; --surface: #1A1E23; --sunk: #15181C; --ink: #ECEFF2; --ink-2: #98A2AD; --line: #2B3138;
+  --flap: #2E343B; --reveal: #ECEFF2; --reveal-ink: #111418;
+  --heavy: #EC5B4F; --volume: #5E91F2; --interval: #EDBE35; --legs: #52B66B; --rest: #707A85;
+  --good: #52C27E; --warn: #E3A53F; --bad: #EF6B5E; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111418; --surface: #1A1E23; --sunk: #15181C; --ink: #ECEFF2; --ink-2: #98A2AD; --line: #2B3138;
+  --flap: #2E343B; --reveal: #ECEFF2; --reveal-ink: #111418;
+  --heavy: #EC5B4F; --volume: #5E91F2; --interval: #EDBE35; --legs: #52B66B; --rest: #707A85;
+  --good: #52C27E; --warn: #E3A53F; --bad: #EF6B5E; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 400 15px/1.5 var(--text);
+  font-variant-numeric: tabular-nums; -webkit-text-size-adjust: 100%; }
+.page { max-width: 760px; margin: 0 auto;
+  padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px));
+  padding-block: 30px calc(64px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 38px; }
+h1, h2 { font-family: var(--display); margin: 0; line-height: .95; text-wrap: balance; }
+h2 { font-size: 30px; font-weight: 800; }
+h3 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; }
+p { margin: 0; }
+.muted { color: var(--ink-2); }
+.sec { display: grid; gap: 14px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); }
+
+/* ---------- anything that opens: folded corner, peels on hover ---------- */
+.open { position: relative; display: block; width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px; border-bottom-right-radius: 0;
+  padding: 13px 15px 20px; --fold: 16px; transition: border-color .15s; }
+.open::after { content: ""; position: absolute; right: -1px; bottom: -1px; width: var(--fold); height: var(--fold);
+  background: linear-gradient(to top left, var(--reveal) 0 50%, var(--flap) 50% 100%);
+  box-shadow: -1px -1px 3px color-mix(in srgb, #000 18%, transparent); transition: width .18s ease-out, height .18s ease-out; }
+.open::before { content: "Why"; position: absolute; right: 5px; bottom: 4px; z-index: 1; font: 700 11.5px/1 var(--text);
+  color: var(--reveal-ink); opacity: 0; transition: opacity .12s; pointer-events: none; }
+.open:hover, .open:focus-visible, .open[aria-expanded="true"] { --fold: 44px; border-color: color-mix(in srgb, var(--ink) 35%, transparent); }
+.open:hover::before, .open:focus-visible::before, .open[aria-expanded="true"]::before { opacity: 1; transition-delay: .08s; }
+.open:focus-visible { outline: 3px solid var(--volume); outline-offset: 2px; }
+.why { font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------- masthead ---------- */
+.mast h1 { font-size: clamp(66px, 20vw, 120px); font-weight: 900; line-height: .8; letter-spacing: -.01em; margin: 6px 0 0; }
+.mast .lede { max-width: 48ch; margin-top: 14px; font-size: 16.5px; }
+.mast { display: grid; gap: 16px; }
+
+/* ---------- intensity keys ---------- */
+.k-heavy { --c: var(--heavy); } .k-volume { --c: var(--volume); } .k-interval { --c: var(--interval); }
+.k-legs { --c: var(--legs); } .k-rest { --c: var(--rest); }
+.pill { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; line-height: 1.5;
+  background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 55%, transparent); }
+
+/* ---------- today ---------- */
+.today { border-top: 5px solid var(--c); background: var(--surface); border: 1px solid var(--line);
+  border-top-width: 5px; border-radius: 6px; padding: 16px 16px 18px; display: grid; gap: 10px; }
+.today .when { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 10px; font-size: 13px; font-weight: 600; }
+.today h2 { font-size: 36px; }
+.today .cta { margin-top: 4px; }
+
+/* ---------- the ask ---------- */
+.nudge { background: color-mix(in srgb, var(--volume) 11%, var(--surface)); border: 1px solid color-mix(in srgb, var(--volume) 40%, transparent);
+  border-left: 4px solid var(--volume); border-radius: 6px; padding: 15px 16px; display: grid; gap: 7px; }
+.nudge h3 { font-size: 17px; }
+.nudge p { font-size: 14.5px; }
+
+/* ---------- goals ---------- */
+.goals { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 11px; }
+.goal { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 13px 14px 15px;
+  display: grid; gap: 5px; align-content: start; min-width: 0; }
+.goal .target { font-size: 13.5px; color: var(--ink-2); }
+.goal .status { font-size: 13.5px; font-weight: 600; }
+.ticks { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+.ticks i { width: 9px; height: 13px; border-radius: 2px; background: var(--sunk); box-shadow: inset 0 0 0 1px var(--line); }
+.ticks i.on { background: var(--good); box-shadow: none; }
+.ticks i.miss { background: color-mix(in srgb, var(--bad) 55%, transparent); box-shadow: none; }
+
+/* ---------- weeks ---------- */
+.week { display: grid; gap: 9px; }
+.wkhead { border-left: 4px solid var(--ink); background: var(--sunk); border-radius: 0 6px 6px 0; padding: 11px 14px 17px;
+  border-top: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.wkhead .name { font: 800 25px/1 var(--display); }
+.wkhead .range { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+.wkhead.is-now { border-left-color: var(--heavy); }
+.wkhead .now { font-size: 11.5px; font-weight: 700; color: var(--heavy); letter-spacing: .06em; text-transform: uppercase; }
+
+.day { position: relative; width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--c); border-radius: 5px;
+  padding: 11px 13px; display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; gap: 11px; align-items: center; }
+.day:focus-visible { outline: 3px solid var(--volume); outline-offset: 2px; }
+.day .dn { font: 800 22px/1 var(--display); }
+.day .wd { font-size: 11px; color: var(--ink-2); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.day .ti { font-size: 14.5px; font-weight: 600; line-height: 1.25; min-width: 0; }
+.day .sub { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+.day.is-today { box-shadow: 0 0 0 2px var(--ink); }
+.day.done { background: color-mix(in srgb, var(--good) 10%, var(--surface)); }
+.day.done .ti { opacity: .72; }
+.day.restday { background: var(--sunk); }
+.day.optionalday { border-left-style: dashed; background: var(--sunk); }
+.day.optionalday.done { background: color-mix(in srgb, var(--good) 10%, var(--surface)); border-left-style: solid; }
+.day.optionalday .mark { box-shadow: inset 0 0 0 1.5px var(--line); border-radius: 6px; }
+.day.optionalday.done .mark { border-radius: 50%; }
+.mark { display: inline-grid; place-items: center; width: 27px; height: 27px; border-radius: 50%; flex: none;
+  background: var(--sunk); box-shadow: inset 0 0 0 1.5px var(--line); color: transparent; }
+.mark svg { width: 15px; height: 15px; }
+.day.done .mark { background: var(--good); box-shadow: none; color: #fff; }
+.day.late .mark { background: color-mix(in srgb, var(--bad) 20%, transparent); box-shadow: inset 0 0 0 1.5px var(--bad); }
+
+.detail { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--c);
+  border-top: none; border-radius: 0 0 5px 5px; margin-top: -9px; padding: 4px 14px 16px; display: grid; gap: 13px; }
+.detail .why { padding-top: 10px; border-top: 1px dashed var(--line); }
+.detail h4 { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.lifts { display: grid; gap: 9px; }
+.lift { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 12px; font-size: 14.5px;
+  padding-bottom: 9px; border-bottom: 1px solid var(--line); }
+.lift:last-child { border-bottom: none; padding-bottom: 0; }
+.lift .nm { font-weight: 600; min-width: 0; }
+.lift .pr { font-weight: 600; white-space: nowrap; }
+.lift .nt { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); line-height: 1.4; }
+.block { background: var(--sunk); border-radius: 5px; padding: 11px 13px; font-size: 14.5px; line-height: 1.5; display: grid; gap: 5px; }
+.note { display: grid; gap: 6px; }
+.note label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.note input { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 5px; padding: 9px 11px; width: 100%; }
+.note input:focus-visible { outline: 2px solid var(--volume); outline-offset: 1px; }
+.btn { font: 600 15px/1 var(--text); cursor: pointer; border-radius: 6px; padding: 13px 16px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); text-align: center; }
+.btn:focus-visible { outline: 3px solid var(--volume); outline-offset: 2px; }
+.btn.prime { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.undo { background: color-mix(in srgb, var(--good) 14%, var(--surface)); border-color: var(--good); color: var(--ink); }
+
+/* ---------- tables + closing panels ---------- */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: grid; gap: 11px; align-content: start; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 11.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
+td.num, th.num { text-align: right; padding-right: 0; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+.thin { color: var(--ink-2); font-size: 13px; }
+.sendwrap { display: grid; gap: 10px; }
+.sendout { font: 400 13px/1.5 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; white-space: pre-wrap;
+  background: var(--sunk); border: 1px solid var(--line); border-radius: 5px; padding: 11px 12px; max-height: 240px; overflow-y: auto; }
+footer { font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 5px; }
+</style>
+</head><body>
+<div class="page">
+
+<header class="mast">
+  <div>
+    <p class="eyebrow">Block 1 &middot; Oct 19 &ndash; Nov 15, 2026</p>
+    <h1>PAULIE</h1>
+    <p class="lede">Three lifting days, one long run, and an optional interval day on Tuesday or
+      Thursday. Four weeks: calibrate, load it, push, test. Tap any day for the session and why
+      it's written that way.</p>
+  </div>
+  <button class="open" type="button" aria-expanded="false" data-why="block">
+    <h3>Why this block looks like this</h3>
+    <p class="why" hidden>You're starting with a better base than most people: a 225&nbsp;lb bench for reps and
+      a 23-minute three-mile means you don't need a beginner program, you need an organized one. So the
+      weights start real, the running goes straight to intensity, and the whole month is written down
+      in advance &mdash; because the thing that stops you isn't effort, it's not knowing what today is.
+      Three lifting days cover every muscle group twice over; two running days are your conditioning,
+      which is why there are no sprints or jumps anywhere in here. Your knees shape how legs are
+      trained, not whether they are.</p>
+  </button>
+</header>
+
+<section id="today" class="sec" aria-live="polite"></section>
+
+<section class="nudge">
+  <h3>Log everything in Hevy and Strava</h3>
+  <p>Every weight in here is an estimate &mdash; I built them all from one number, your 225&nbsp;&times;&nbsp;4
+    bench. Log your lifts in <strong>Hevy</strong> and your runs in <strong>Strava</strong> and I can stop
+    guessing: next month's weights come from what you actually did, not from arithmetic. Until then, trust
+    how the set feels over what the sheet says.</p>
+</section>
+
+<section class="sec">
+  <div class="goals">
+    <div class="panel">
+      <h3>Full range, every rep</h3>
+      <p>All the way down, all the way up, on everything. The stretched bottom of a rep is where most of
+        the growth comes from, so half-reps with more weight on the bar buy you nothing &mdash; they just
+        make the number look better. If a weight stops you reaching full range, it's too heavy. And if
+        something hurts, take weight off before you take range off: a painful range is information, a
+        shortened one is just a worse set.</p>
+    </div>
+    <div class="panel">
+      <h3>At 55 minutes, stop where you are</h3>
+      <p>Every session is ordered hardest and most important first, so when the hour's nearly up, cut
+        whatever's left and leave &mdash; you've already done the part that matters. On Monday that means
+        the easy cardio goes first; it's on the end of the day for exactly that reason. A session you
+        finish in 55 minutes four weeks running beats a 75-minute one you start skipping in week three.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <h2>The four goals</h2>
+  <div class="goals" id="goals"></div>
+</section>
+
+<section class="sec" id="weeks"></section>
+
+<section class="sec">
+  <h2>Every muscle group, every week</h2>
+  <div class="panel">
+    <p class="thin">Direct working sets per week, not counting what a muscle picks up from the big lifts.
+      Ten to twenty sets a week is the range where muscle reliably grows.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Muscle group</th><th class="num">Sets / week</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>Back</td><td class="num">12</td><td>Mon row + pulldown, Sat two rows</td></tr>
+          <tr><td>Chest</td><td class="num">10</td><td>Mon bench, Sat incline press + flye</td></tr>
+          <tr><td>Hamstrings &amp; glutes</td><td class="num">9</td><td>Wed Romanian deadlift, leg curl, back extension</td></tr>
+          <tr><td>Shoulders</td><td class="num">6</td><td>Mon overhead press, Sat lateral raise</td></tr>
+          <tr><td>Biceps</td><td class="num">5</td><td>Mon hammer curl, Sat incline curl</td></tr>
+          <tr><td>Triceps</td><td class="num">2</td><td>Sat pushdown &mdash; plus every press you do</td></tr>
+          <tr><td>Core</td><td class="num">10</td><td>Wed Pallof, Sun after the long run</td></tr>
+          <tr><td>Quads</td><td class="num">6</td><td>Wed ATG split squat + leg extension, both full range</td></tr>
+          <tr><td>Calves</td><td class="num">2</td><td>Wed &mdash; plus every mile you run</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="open" type="button" aria-expanded="false" data-why="vol">
+      <h3>Where the volume runs lean, and why</h3>
+      <p class="why" hidden>Two groups sit at the low end on purpose. <strong>Quads</strong> get six sets
+        while we find out what your knees tolerate &mdash; held back by count, never by range. Both quad
+        exercises run through a full range at a weight you control, and on the leg extension specifically
+        you finish just short of a hard lockout, because that last stretch is where the kneecap takes the
+        most pressure. <strong>Arms and shoulders</strong> run lean because three lifting days is three
+        lifting days: the big presses and rows do most of the work for them, and the direct sets are what
+        gets squeezed when the week has one fewer session in it. Both are the first things Block&nbsp;2 adds
+        back, assuming your knees come through the month quiet.</p>
+    </button>
+  </div>
+</section>
+
+<section class="sec">
+  <h2>Starting weights</h2>
+  <div class="panel">
+    <p class="thin">All estimates, all built from your bench. Week one you find the real ones.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Lift</th><th class="num">Week 1 start</th></tr></thead>
+        <tbody>
+          <tr><td>Barbell bench press</td><td class="num">195 lb</td></tr>
+          <tr><td>Standing overhead press</td><td class="num">110 lb</td></tr>
+          <tr><td>Chest-supported row</td><td class="num">120 lb</td></tr>
+          <tr><td>Lat pulldown</td><td class="num">140 lb</td></tr>
+          <tr><td>Incline dumbbell press</td><td class="num">60 lb / hand</td></tr>
+          <tr><td>One-arm dumbbell row</td><td class="num">65 lb / hand</td></tr>
+          <tr><td>Seated cable row</td><td class="num">130 lb</td></tr>
+          <tr><td>Romanian deadlift</td><td class="num">135 lb</td></tr>
+          <tr><td>ATG split squat</td><td class="num">bodyweight</td></tr>
+          <tr><td>Seated leg curl</td><td class="num">70 lb</td></tr>
+          <tr><td>45&deg; back extension</td><td class="num">bodyweight</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="open" type="button" aria-expanded="false" data-why="prog">
+      <h3>The only progression rule you need</h3>
+      <p class="why" hidden>Leave two reps in the tank on week one. If you finished every prescribed rep
+        at a weight <em>through a full range</em> and the last set felt like you had two or more left, add
+        5&nbsp;lb next week &mdash; 10&nbsp;lb on the Romanian deadlift, because hinges move faster than
+        presses. If you missed reps, or only got them by cutting the range short, stay where you are. A
+        heavier set at fewer reps isn't progress, and neither is a heavier set at half the range.
+        That's it. One rule, applied every week, beats any complicated scheme.</p>
+    </button>
+  </div>
+</section>
+
+<section class="sec">
+  <h2>Food and measuring</h2>
+  <div class="goals">
+    <div class="goal">
+      <h3>Protein: 180 g a day</h3>
+      <p class="target">Roughly 45&nbsp;g at four meals. One gram per pound of bodyweight. This is the only
+        nutrition number worth tracking right now &mdash; it's what keeps the muscle while you lose the fat.</p>
+    </div>
+    <div class="goal">
+      <h3>Don't drink calories</h3>
+      <p class="target">Soda, juice, beer, sweet coffee. The easiest few hundred calories a day to lose, and
+        the only food rule in this block besides protein.</p>
+    </div>
+    <div class="goal">
+      <h3>Sunday mornings</h3>
+      <p class="target">Weigh in before you eat. Waist at the navel, neck just below the Adam's apple. Same
+        time, same conditions, every week &mdash; the trend is the data, not any single number.</p>
+    </div>
+    <div class="goal">
+      <h3>No calorie counting yet</h3>
+      <p class="target">If the four-week weight average hasn't moved down by Nov&nbsp;15, we'll adjust food
+        then. Changing training and food at the same time means learning nothing from either.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <h2>Send your week to Pat</h2>
+  <div class="panel sendwrap">
+    <p class="thin">Sunday night, tap this. It gathers the days you checked off and the notes you left, so
+      Pat can write next week knowing how this one actually went.</p>
+    <button class="btn prime" type="button" id="sendbtn">Send this week to Pat</button>
+    <div id="sendout" class="sendout" hidden></div>
+    <p class="thin" id="sendhint" hidden>Copied. Paste it into a text to Pat.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Checks and notes are saved on this phone only. Installing this page as an app keeps them.</p>
+  <p>Built for Paul by Pat. Block 1 of a monthly plan &mdash; Block 2 gets written from what you log.</p>
+</footer>
+
+</div>
+<script>
+"use strict";
+
+/* ---------------------------------------------------------------- the plan */
+
+var SESSIONS = {
+  upperA: {
+    kind: "heavy", title: "Upper A: heavy + cardio", mins: 66,
+    why: "Heavy fives on the bench because it's the one lift you already have a number for, so progress "
+       + "will be easiest to see there. The row matches the bench set for set \u2014 pressing a lot without "
+       + "pulling as much is how shoulders start hurting six weeks into a program. The easy cardio goes on "
+       + "the end of this day rather than any other: it's an upper-body session, so your legs are fresh for "
+       + "it, Wednesday's legs are too beaten up to add to, and Saturday sits the day before your long run.",
+    warmup: "5 min bike or easy walk, then three light bench sets of 5 \u2014 the empty bar, 135, then 165.",
+    lifts: [
+      { nm: "Barbell bench press", pr: "4 \u00d7 5", load: "195 lb",
+        nt: "About 78% of your estimated max \u2014 225 for 4 puts that max around 250. Two reps left in the tank on set one; if set one is a grind, drop 10 lb." },
+      { nm: "Chest-supported row", pr: "4 \u00d7 8", load: "120 lb",
+        nt: "Chest stays on the pad. Pull to your ribs, not your collarbone. Full stretch at the front." },
+      { nm: "Standing overhead press", pr: "3 \u00d7 6", load: "110 lb",
+        nt: "Keep your ribs pulled down so it doesn't turn into a standing incline press." },
+      { nm: "Lat pulldown", pr: "3 \u00d7 10", load: "140 lb",
+        nt: "All the way up until the lats stretch, all the way down to your collarbone." },
+      { nm: "Hammer curl", pr: "2 \u00d7 12", load: "35 lb / hand", nt: "" }
+    ],
+    finisher: "Easy cardio, 12 min. Bike, rower or an incline walk \u2014 conversational, nose-breathing pace, "
+            + "nothing that leaves you breathing hard. This is the first thing to cut if you're out of time."
+  },
+  lower: {
+    kind: "legs", title: "Lower &amp; core", mins: 58,
+    why: "Your knees shape this day, but they don't shrink it. Everything here has one clear target and "
+       + "loads a little at a time \u2014 no sled you can pile plates onto. Full range on all of it: the "
+       + "stretched position is where most of the growth comes from, and cutting range to chase weight gets "
+       + "you neither. Depth is whatever is pain-free, and that's the only limit \u2014 when something hurts, "
+       + "take weight off before you take range off.",
+    warmup: "5 min bike, 10 bodyweight hip hinges, 20 glute bridges, then a set of split squats with no weight.",
+    lifts: [
+      { nm: "Romanian deadlift", pr: "4 \u00d7 8", load: "135 lb",
+        nt: "Start light. Push your hips back and let the bar travel until you feel a real stretch in the hamstrings, then stand all the way up. The stretch is the point." },
+      { nm: "ATG split squat", pr: "3 \u00d7 16 total", load: "bodyweight",
+        nt: "16 total, 8 per leg. Front knee travels past the toes, back knee low. This looks like the opposite of knee-friendly and isn't \u2014 training the knee through its full range under control is what makes it tougher. Bodyweight until 16 is easy, then hold dumbbells." },
+      { nm: "Leg extension", pr: "3 \u00d7 12", load: "light",
+        nt: "Full range, slow, light. Don't lock out hard at the top \u2014 that last bit is where the kneecap takes the most pressure, so finish just short of it and control the way down." },
+      { nm: "Seated leg curl", pr: "3 \u00d7 12", load: "70 lb",
+        nt: "Full stretch at the bottom. These are the knee insurance \u2014 don't skip them." },
+      { nm: "45\u00b0 back extension", pr: "2 \u00d7 15", load: "bodyweight",
+        nt: "Walk up, set the pad at your hips, go \u2014 no bar to load and nothing to set up. Drive up with your glutes rather than arching your lower back, and stop level with your body instead of bending back past it. Hug a plate to your chest once 15 is easy. If the bench is taken, a cable pull-through does the same job." },
+      { nm: "Standing calf raise", pr: "2 \u00d7 15", load: "",
+        nt: "All the way down for the stretch, all the way up for the squeeze." },
+      { nm: "Pallof press", pr: "2 \u00d7 12 each side", load: "",
+        nt: "Stand side-on to a cable, press it straight out, don't let it twist you. Core work that doesn't involve your spine bending." }
+    ],
+    finisher: ""
+  },
+  upperB: {
+    kind: "volume", title: "Upper B: volume", mins: 62,
+    why: "Monday was heavy and low-rep; Saturday is the same muscles at lighter weight for more reps, with "
+       + "the smaller stuff \u2014 side delts, arms \u2014 getting real work here instead of being tacked onto "
+       + "the end of a hard day. Doing both halves is why a chest and back actually grow rather than just "
+       + "getting stronger at five reps: strength likes heavy, size likes volume. It sits on Saturday with a "
+       + "rest day in front of it, so you hit it fresh.",
+    warmup: "5 min rower or bike, then one light set of the incline press.",
+    lifts: [
+      { nm: "Incline dumbbell press", pr: "4 \u00d7 10", load: "60 lb / hand",
+        nt: "Bench at about 30\u00b0. Weight shown is per hand. All the way down until you feel the chest stretch." },
+      { nm: "Cable flye", pr: "2 \u00d7 15", load: "", nt: "Light. Think about squeezing, not pressing." },
+      { nm: "Seated cable row", pr: "3 \u00d7 12", load: "130 lb",
+        nt: "Let the weight pull your arms all the way out between reps." },
+      { nm: "One-arm dumbbell row", pr: "2 \u00d7 10 each", load: "65 lb", nt: "" },
+      { nm: "Dumbbell lateral raise", pr: "3 \u00d7 15", load: "15 lb / hand",
+        nt: "Lighter than you think. Elbows lead, no swinging." },
+      { nm: "Cable triceps pushdown", pr: "2 \u00d7 15", load: "55 lb", nt: "" },
+      { nm: "Incline dumbbell curl", pr: "3 \u00d7 12", load: "25 lb / hand",
+        nt: "Lying back on the incline is what puts the biceps in a stretch. Let your arms hang all the way down." }
+    ],
+    finisher: ""
+  }
+};
+
+var REST_WHY = "A real day off. Walk, stretch, play something, don't lift. Recovery is when the training "
+  + "you already did turns into muscle \u2014 it isn't the gap between the useful parts. If you want to "
+  + "train, the optional 4\u00d74 lives on this day.";
+
+var FRI_WHY = "Friday is off so Saturday's volume session lands on fresh arms and shoulders, and so the "
+  + "three lifting days sit Monday, Wednesday and Saturday with a clear day between each. Three "
+  + "well-spaced hard sessions beat four crowded ones.";
+
+var FOURXFOUR_WHY = "Optional, and the most valuable optional thing on this page. The Norwegian 4\u00d74 is "
+  + "the most-studied interval session there is and the most efficient way to raise your VO2 max \u2014 the "
+  + "engine behind every run you do, and a big part of why fat loss keeps working. Four minutes is long "
+  + "enough to pull your heart rate to the top and hold it there, which 30-second sprints never manage, "
+  + "and it's kinder to your knees than sprinting. It gets its own day on purpose: bolted onto the end of a "
+  + "lifting session you'd do a worse version of both. Take Tuesday or Thursday, whichever suits your week "
+  + "\u2014 one a week is the target, and skipping it costs you nothing else in the plan.";
+
+var WEEKS = [
+  {
+    name: "Week 1", label: "Calibrate", start: "2026-10-19",
+    why: "A measuring week. Every weight in here is an estimate built from your 225 \u00d7 4 bench, and your "
+       + "only job is to find the real ones and write them down. Leave two reps in the tank on every set. If "
+       + "that means going lighter than the sheet says, go lighter \u2014 nothing is behind schedule in week one.",
+    mods: {},
+    fourxfour: {
+      pace: "roughly 7:00\u20137:40 per mile \u2014 but go by effort, not the watch",
+      why: "The first one, so treat the pace as a wide guide and the effort as the actual instruction: "
+         + "hard enough that you’re down to a few words at a time, easy enough that you can repeat it "
+         + "four times. Anywhere in that range is a good session, and the slow end counts exactly as "
+         + "much as the fast end. If the fourth interval is faster than the first, you went out too easy."
+    },
+    sun: {
+      title: "Long chill run", mins: 50,
+      run: ["40 min easy \u2014 anywhere from 9:30 to 11:30 per mile.",
+            "Pace the conversation, not the watch: if you can talk in full sentences, you\u2019re right.",
+            "Slower than the range is fine. Faster is the only way to get this day wrong."],
+      why: "The long one, and genuinely easy \u2014 if you can’t hold a conversation, slow down. The pace "
+         + "range is deliberately wide and the slow end is not the failing end: on a tired day, 11:30 "
+         + "does the same job as 9:30. Almost all "
+         + "of the aerobic base that makes a 4\u00d74 possible gets built at this pace rather than at hard "
+         + "ones. Sunday is also measuring day, which is the only way we find out whether any of this is working.",
+      extras: "Weigh in first thing, before you eat and before the run. Waist at the navel, neck just below "
+            + "the Adam's apple. Then 10 min of core after the run: 3 \u00d7 45s plank, 3 \u00d7 30s side plank "
+            + "each side, 2 \u00d7 10 dead bug each side."
+    }
+  },
+  {
+    name: "Week 2", label: "Load it", start: "2026-10-26",
+    why: "You know your real weights now. Everywhere week one's last set felt like you had two or more reps "
+       + "left, add 5 lb \u2014 10 on the Romanian deadlift. Everything else stays exactly the same: same "
+       + "exercises, same sets, same reps. Changing one variable at a time is the only way to find out what's working.",
+    mods: { loadNote: "Week 1's weight, plus 5 lb anywhere week 1 was easy (10 lb on the Romanian deadlift)." },
+    fourxfour: {
+      pace: "roughly 6:55\u20137:35 per mile, or just last week\u2019s effort again",
+      why: "A touch quicker than last week if it’s there, and the same effort if it isn’t. That’s how "
+         + "this protocol progresses — not more intervals, just a bit more pace over time. Some weeks "
+         + "it won’t come, and that is completely normal: four honest intervals at last week’s pace "
+         + "still does the job."
+    },
+    sun: {
+      title: "Long chill run", mins: 55,
+      run: ["45 min easy \u2014 9:30 to 11:30 per mile, or slower.",
+            "Same rule: full sentences the whole way."],
+      why: "Five minutes longer than last week. The only thing that changes on this day all month is the "
+         + "duration \u2014 the pace stays easy the whole way through the block.",
+      extras: "Weigh in and measure first thing. Then 10 min of core after the run."
+    }
+  },
+  {
+    name: "Week 3", label: "Push", start: "2026-11-02",
+    why: "The hardest week of the block: one extra set on the first exercise of each lifting day. If a "
+       + "session runs past the hour, cut the last thing on the list. That's the plan working, not you "
+       + "failing \u2014 the first exercise is the one that matters most and it's already done.",
+    mods: { addSet: true, loadNote: "Week 2's weight, plus 5 lb anywhere week 2 was easy." },
+    fourxfour: {
+      pace: "roughly 6:50\u20137:30 per mile, if it\u2019s there on the day",
+      why: "The quickest of the block, in the week your legs are most beaten up from lifting — so if "
+         + "this one lands slower than the last two, that’s the lifting talking, not you going "
+         + "backwards. Run the effort and let the pace be whatever it is."
+    },
+    sun: {
+      title: "Long chill run", mins: 60,
+      run: ["50 min easy \u2014 9:30 to 11:30 per mile, or slower.",
+            "Longest run of the block. Err slow; there is no such thing as too slow here."],
+      why: "The longest run of the block, and still easy. Hardest week everywhere else, so if there's one "
+         + "day to run slower than prescribed, it's this one.",
+      extras: "Weigh in and measure first thing. Then 10 min of core after the run."
+    }
+  },
+  {
+    name: "Week 4", label: "Test", start: "2026-11-09",
+    why: "Lifting drops by a set everywhere while the weights stay exactly the same, so you arrive at "
+       + "Sunday fresh. Then you run three miles as hard as you can hold, and we find out what four weeks "
+       + "did. Backing off before a test isn't a rest week \u2014 it's the only way to get a number you can trust.",
+    mods: { dropSet: true,
+            loadNote: "Week 3's weight, unchanged. One set off the main lifts; the two-set accessories stay as they are." },
+    fourxfour: {
+      skip: true, title: "Rest, or a shake-out jog", mins: 20,
+      runLines: ["Skip the 4 × 4 this week.",
+                 "If you'd rather move: 20 min very easy, and nothing faster."],
+      pace: "easy only",
+      why: "Test week. Skip the 4\u00d74 entirely, or jog 20 easy minutes if you'd rather move. Sunday's "
+         + "three miles is the only hard running this week, and turning up to it tired would waste the month."
+    },
+    sun: {
+      title: "Three-mile time trial", mins: 50,
+      run: ["15 min easy warm-up with 3 \u00d7 30s pickups at the end.",
+            "3 miles as hard as you can hold \u2014 even pace.",
+            "Don’t go out at 7:00. Settle somewhere around 7:25\u20137:50 and squeeze the last mile.",
+            "10 min cool-down."],
+      why: "The whole block points here, and the number is information rather than a grade. Your "
+         + "starting point was about 23:00, so anything near or under that is a good day — and a slower "
+         + "one just means heat, sleep, or a hard week of lifting, not a wasted month. Four weeks of "
+         + "lifting three times a week while running is a real training load to run a time trial on. "
+         + "Even pacing is how you get your best time: going out fast feels great for a mile and costs "
+         + "more than it buys.",
+      extras: "Weigh in and measure one last time before you run. Afterwards, send the whole month with the "
+            + "button at the bottom of this page \u2014 that's what the next block gets built from."
+    }
+  }
+];
+
+/* ------------------------------------------------------- build the calendar */
+
+var DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+var MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function parseISO(s) {
+  var p = s.split("-");
+  return new Date(+p[0], +p[1] - 1, +p[2]);
+}
+function toISO(d) {
+  var m = d.getMonth() + 1, day = d.getDate();
+  return d.getFullYear() + "-" + (m < 10 ? "0" + m : m) + "-" + (day < 10 ? "0" + day : day);
+}
+function addDays(d, n) {
+  var o = new Date(d.getTime());
+  o.setDate(o.getDate() + n);
+  return o;
+}
+function pretty(d) { return MONTH[d.getMonth()] + " " + d.getDate(); }
+
+/* Applies a week's set modification to a session's lift list. */
+function liftsFor(session, mods) {
+  var out = session.lifts.map(function (l) {
+    return { nm: l.nm, pr: l.pr, load: l.load, nt: l.nt };
+  });
+  if (!out.length) return out;
+  if (mods.addSet) {
+    out[0].pr = bumpSets(out[0].pr, 1);
+    out[0].nt = (out[0].nt ? out[0].nt + " " : "") + "One extra set this week — this is the push week.";
+  }
+  if (mods.dropSet) {
+    // Taper, not a cut: one set off anything carrying three or more, accessories left alone.
+    for (var i = 0; i < out.length; i++) {
+      var n = parseInt(out[i].pr, 10);
+      if (n >= 3) out[i].pr = bumpSets(out[i].pr, -1);
+    }
+  }
+  return out;
+}
+function bumpSets(pr, delta) {
+  var m = /^(\d+)(\s*×.*)$/.exec(pr);
+  if (!m) return pr;
+  var n = +m[1] + delta;
+  if (n < 2) return null;
+  return n + m[2];
+}
+
+/* Mon lift, Tue optional 4x4, Wed lift, Thu optional 4x4, Fri off, Sat lift, Sun long run. */
+function buildDays() {
+  var days = [];
+  for (var w = 0; w < WEEKS.length; w++) {
+    var wk = WEEKS[w], monday = parseISO(wk.start), week = [];
+    for (var i = 0; i < 7; i++) {
+      var date = addDays(monday, i), iso = toISO(date), dow = DOW[i], d = null;
+
+      if (i === 1 || i === 3) {
+        // Rest, with the 4x4 available on it. Optional: never counted as a missed day.
+        var f = wk.fourxfour;
+        d = { iso: iso, dow: dow, date: date, kind: "interval",
+              title: f.title || "Rest, or the 4 × 4",
+              planned: false, optional: true, mins: f.mins || 40,
+              why: (f.skip ? "" : FOURXFOUR_WHY + " ") + f.why,
+              warmup: "", lifts: [],
+              run: f.runLines || [
+                    "10 min easy warm-up.",
+                    "4 × 4 min hard. Hard enough that talking is down to a few words at a time.",
+                    "Pace: " + f.pace + ".",
+                    "3 min easy jog between each. Keep moving, don't stand still.",
+                    "5 min cool-down."],
+              extras: "", loadNote: "", restAlt: REST_WHY };
+
+      } else if (i === 0 || i === 2 || i === 5) {
+        var s = i === 0 ? SESSIONS.upperA : i === 2 ? SESSIONS.lower : SESSIONS.upperB;
+        d = { iso: iso, dow: dow, date: date, kind: s.kind, title: s.title, planned: true,
+              optional: false, mins: s.mins, why: s.why, warmup: s.warmup,
+              lifts: liftsFor(s, wk.mods), run: null, extras: "",
+              finisher: s.finisher, loadNote: wk.mods.loadNote || "" };
+
+      } else if (i === 4) {
+        d = { iso: iso, dow: dow, date: date, kind: "rest", title: "Rest", planned: false,
+              optional: false, mins: 0, why: FRI_WHY, warmup: "", lifts: [], run: null,
+              extras: "", loadNote: "" };
+
+      } else {
+        d = { iso: iso, dow: dow, date: date, kind: "rest", title: wk.sun.title, planned: true,
+              optional: false, mins: wk.sun.mins, why: wk.sun.why, warmup: "", lifts: [],
+              run: wk.sun.run, extras: wk.sun.extras, loadNote: "" };
+      }
+      week.push(d);
+    }
+    days.push({ wk: wk, days: week });
+  }
+  return days;
+}
+
+var BLOCK = buildDays();
+var ALL = [];
+BLOCK.forEach(function (w) { w.days.forEach(function (d) { ALL.push(d); }); });
+var PLANNED = ALL.filter(function (d) { return d.planned; });
+var OPTIONAL = ALL.filter(function (d) { return d.optional; });
+
+/* ------------------------------------------------------------------- state */
+
+var KEY = "paulie-recomp-v1";
+var state = {};
+try {
+  var raw = window.localStorage.getItem(KEY);
+  if (raw) state = JSON.parse(raw) || {};
+} catch (e) { state = {}; }
+
+function save() {
+  try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* private mode */ }
+}
+function rec(iso) {
+  if (!state[iso]) state[iso] = { done: false, note: "" };
+  return state[iso];
+}
+function isDone(iso) { return !!(state[iso] && state[iso].done); }
+
+/* -------------------------------------------------------------- rendering */
+
+var TODAY_ISO = toISO(new Date());
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" '
+  + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4.5 4.5L19 7"/></svg>';
+
+function dayLabel(d) {
+  if (d.optional) return "Optional · Norwegian 4 × 4 · ~" + d.mins + " min";
+  if (!d.planned) return "Rest day";
+  var bits = [];
+  if (d.lifts.length) bits.push(d.lifts.length + " exercises");
+  if (d.run) bits.push("run");
+  if (d.finisher) bits.push("cardio");
+  if (d.mins) bits.push("~" + d.mins + " min");
+  return bits.join(" · ");
+}
+
+function renderWeeks() {
+  var host = document.getElementById("weeks");
+  host.innerHTML = "<h2>The block</h2>";
+  BLOCK.forEach(function (w, wi) {
+    var sec = document.createElement("div");
+    sec.className = "week";
+    var sun = w.days[6].iso;
+    var isNow = TODAY_ISO >= w.days[0].iso && TODAY_ISO <= sun;
+    var head = document.createElement("button");
+    head.type = "button";
+    head.className = "open wkhead" + (isNow ? " is-now" : "");
+    head.setAttribute("aria-expanded", "false");
+    head.innerHTML = '<div class="name">' + esc(w.wk.name) + " — " + esc(w.wk.label) + "</div>"
+      + '<div class="range">' + esc(pretty(w.days[0].date)) + " – " + esc(pretty(w.days[6].date))
+      + (isNow ? ' &middot; <span class="now">this week</span>' : "") + "</div>"
+      + '<p class="why" hidden style="margin-top:9px">' + esc(w.wk.why) + "</p>";
+    wireWhy(head);
+    sec.appendChild(head);
+
+    w.days.forEach(function (d) {
+      sec.appendChild(dayRow(d));
+      var det = detailPanel(d);
+      sec.appendChild(det);
+    });
+    host.appendChild(sec);
+  });
+}
+
+function dayRow(d) {
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "day k-" + d.kind + (d.planned || d.optional ? "" : " restday")
+    + (d.optional ? " optionalday" : "")
+    + (d.iso === TODAY_ISO ? " is-today" : "") + (isDone(d.iso) ? " done" : "")
+    + (!isDone(d.iso) && d.planned && d.iso < TODAY_ISO ? " late" : "");
+  b.setAttribute("aria-expanded", "false");
+  b.dataset.iso = d.iso;
+  b.innerHTML = '<div><div class="dn">' + d.date.getDate() + '</div><div class="wd">' + esc(d.dow) + "</div></div>"
+    + '<div><div class="ti">' + d.title + '</div><div class="sub">' + esc(dayLabel(d)) + "</div></div>"
+    + '<span class="mark">' + CHECK + "</span>";
+  b.addEventListener("click", function () {
+    var open = b.getAttribute("aria-expanded") === "true";
+    b.setAttribute("aria-expanded", open ? "false" : "true");
+    b.nextElementSibling.hidden = open;
+  });
+  return b;
+}
+
+function detailPanel(d) {
+  var box = document.createElement("div");
+  box.className = "detail k-" + d.kind;
+  box.hidden = true;
+  var h = [];
+
+  if (d.warmup) h.push('<div><h4>Warm-up</h4><p style="margin-top:4px">' + esc(d.warmup) + "</p></div>");
+
+  if (d.run) {
+    h.push('<div class="block"><strong>The run</strong>'
+      + d.run.map(function (l) { return "<div>" + esc(l) + "</div>"; }).join("") + "</div>");
+  }
+
+  if (d.lifts.length) {
+    h.push('<div><h4>' + (d.run ? "Then, in the gym" : "The session") + "</h4><div class=\"lifts\" style=\"margin-top:8px\">"
+      + d.lifts.map(function (l) {
+          return '<div class="lift"><div class="nm">' + esc(l.nm) + '</div><div class="pr">' + l.pr
+            + (l.load ? ' <span class="muted">&middot; ' + l.load + "</span>" : "") + "</div>"
+            + (l.nt ? '<div class="nt">' + esc(l.nt) + "</div>" : "") + "</div>";
+        }).join("") + "</div></div>");
+  }
+
+  if (d.finisher) h.push('<div class="block"><strong>To finish</strong><div>' + esc(d.finisher) + "</div></div>");
+  if (d.loadNote) h.push('<p class="thin">Weights: ' + esc(d.loadNote) + "</p>");
+  if (d.extras) h.push('<div class="block">' + esc(d.extras) + "</div>");
+  if (d.restAlt) h.push('<p class="thin">Not doing it? Then today is a rest day. ' + esc(d.restAlt) + "</p>");
+  if (d.why) h.push('<p class="why">' + esc(d.why) + "</p>");
+
+  box.innerHTML = h.join("");
+
+  if (d.planned || d.optional) {
+    var note = document.createElement("div");
+    note.className = "note";
+    var id = "n-" + d.iso;
+    note.innerHTML = '<label for="' + id + '">How did it go?</label>'
+      + '<input id="' + id + '" type="text" maxlength="180" '
+      + 'placeholder="Weights, knees, energy, time, mood — anything" '
+      + 'value="' + esc(rec(d.iso).note || "") + '">'
+      + '<p class="thin">These notes are what the next plan gets built from. Write anything: a weight that '
+      + "felt wrong, a knee that complained, a session you cut short and why, or that you felt great. "
+      + "Nothing here is too small — the same comment three weeks running is what changes the plan.</p>";
+    var input = note.querySelector("input");
+    input.addEventListener("input", function () { rec(d.iso).note = input.value; save(); });
+    box.appendChild(note);
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    var doneWord = d.optional ? "Did it — tap to undo" : "Done — tap to undo";
+    var todoWord = d.optional ? "I did the 4 × 4" : "Mark this day done";
+    btn.className = "btn" + (isDone(d.iso) ? " undo" : " prime");
+    btn.textContent = isDone(d.iso) ? doneWord : todoWord;
+    btn.addEventListener("click", function () {
+      var r = rec(d.iso);
+      r.done = !r.done;
+      save();
+      btn.className = "btn" + (r.done ? " undo" : " prime");
+      btn.textContent = r.done ? doneWord : todoWord;
+      var row = box.previousElementSibling;
+      row.classList.toggle("done", r.done);
+      row.classList.toggle("late", !r.done && d.iso < TODAY_ISO);
+      renderGoals();
+      renderToday();
+    });
+    box.appendChild(btn);
+  }
+  return box;
+}
+
+function wireWhy(btn) {
+  btn.addEventListener("click", function () {
+    var open = btn.getAttribute("aria-expanded") === "true";
+    btn.setAttribute("aria-expanded", open ? "false" : "true");
+    var p = btn.querySelector(".why");
+    if (p) p.hidden = open;
+  });
+}
+
+/* ------------------------------------------------------------------ today */
+
+function renderToday() {
+  var host = document.getElementById("today");
+  var d = null;
+  for (var i = 0; i < ALL.length; i++) { if (ALL[i].iso === TODAY_ISO) { d = ALL[i]; break; } }
+
+  if (!d) {
+    var first = ALL[0], last = ALL[ALL.length - 1];
+    var before = TODAY_ISO < first.iso;
+    host.innerHTML = '<div class="today k-rest"><div class="when"><span class="pill">'
+      + (before ? "Starts soon" : "Block finished") + "</span></div><h2>"
+      + (before ? "Block 1 starts Monday, Oct 19" : "Block 1 is done") + "</h2><p>"
+      + (before
+          ? "Nothing to do until Monday. Read Monday's session so you walk in knowing the plan."
+          : "Send the month to Pat with the button at the bottom, and he'll write Block 2 from it.")
+      + "</p></div>";
+    return;
+  }
+
+  var done = isDone(d.iso);
+  var h = '<div class="today k-' + d.kind + '">'
+    + '<div class="when"><span class="pill">'
+    + (d.optional ? "Today, if you want it" : d.planned ? "Today" : "Rest day") + "</span>"
+    + '<span class="muted">' + esc(d.dow) + " · " + esc(pretty(d.date)) + "</span>"
+    + ((d.planned || d.optional) && d.mins ? '<span class="muted">~' + d.mins + " min</span>" : "")
+    + (done ? '<span class="muted" style="color:var(--good);font-weight:600">Logged</span>' : "")
+    + "</div><h2>" + d.title + "</h2>";
+
+  if (d.optional) {
+    h += "<p>" + esc(d.run[1] || d.run[0])
+      + " Or take the day off — it costs you nothing else in the plan.</p>";
+  } else if (!d.planned) {
+    h += "<p>No training today. Walk, stretch, eat your protein.</p>";
+  } else if (d.run && d.lifts.length) {
+    h += "<p>" + esc(d.run[1] || d.run[0]) + ", then " + d.lifts.length + " exercises in the gym.</p>";
+  } else if (d.run) {
+    h += "<p>" + esc(d.run[1] || d.run[0]) + "</p>";
+  } else {
+    h += "<p>" + esc(d.lifts.map(function (l) { return l.nm; }).join(" · ")) + "</p>";
+  }
+  h += '<p class="cta muted">Find ' + esc(d.dow) + " " + esc(pretty(d.date))
+    + " below for the full session, the weights, and why.</p></div>";
+  host.innerHTML = h;
+}
+
+/* ------------------------------------------------------------------ goals */
+
+function renderGoals() {
+  var doneCount = PLANNED.filter(function (d) { return isDone(d.iso); }).length;
+  var elapsed = PLANNED.filter(function (d) { return d.iso <= TODAY_ISO; }).length;
+  var missed = PLANNED.filter(function (d) { return d.iso < TODAY_ISO && !isDone(d.iso); }).length;
+  var ticks = PLANNED.map(function (d) {
+    var cls = isDone(d.iso) ? " class=\"on\"" : (d.iso < TODAY_ISO ? " class=\"miss\"" : "");
+    return "<i" + cls + "></i>";
+  }).join("");
+
+  var weighins = 0;
+  BLOCK.forEach(function (w) { if (isDone(w.days[6].iso)) weighins++; });
+  var fours = OPTIONAL.filter(function (d) { return isDone(d.iso); }).length;
+
+  var cards = [];
+
+  cards.push('<div class="goal"><h3>Show up every planned day</h3>'
+    + '<p class="target">' + PLANNED.length + " sessions in this block.</p>"
+    + '<p class="status">' + doneCount + " done" + (missed ? " · " + missed + " missed" : "")
+    + (elapsed < PLANNED.length ? ' <span class="muted">· ' + (PLANNED.length - elapsed) + " to come</span>" : "")
+    + '</p><div class="ticks">' + ticks + "</div></div>");
+
+  cards.push('<div class="goal"><h3>Lose fat, build muscle</h3>'
+    + '<p class="target">Weight and waist, every Sunday morning. The four-week trend is the answer, '
+    + "not any single week.</p>"
+    + '<p class="status">' + weighins + " of 4 Sundays logged</p></div>");
+
+  cards.push('<div class="goal"><h3>Every muscle group, every week</h3>'
+    + '<p class="target">Built into the plan rather than left to chance. The table below shows the '
+    + "weekly sets per group.</p>"
+    + '<p class="status">Handled, if you do the days</p></div>');
+
+  cards.push('<div class="goal"><h3>Lifts going up</h3>'
+    + '<p class="target">Add 5 lb when a weight gets easy, through a full range. That one rule, applied '
+    + "every week, is the whole method.</p>"
+    + '<p class="status">Log in Hevy so we can see it</p></div>');
+
+  cards.push('<div class="goal"><h3>The optional 4 &times; 4</h3>'
+    + '<p class="target">Tuesday or Thursday, one a week. Not counted against you — these are bonus, '
+    + "and the plan works without them.</p>"
+    + '<p class="status">' + fours + " done" + (fours >= 4 ? " — all four weeks" : " of 4 possible")
+    + "</p></div>");
+
+  document.getElementById("goals").innerHTML = cards.join("");
+}
+
+/* ------------------------------------------------------------------- send */
+
+function weekOf(iso) {
+  for (var i = 0; i < BLOCK.length; i++) {
+    if (iso >= BLOCK[i].days[0].iso && iso <= BLOCK[i].days[6].iso) return BLOCK[i];
+  }
+  return null;
+}
+
+function buildReport() {
+  var firstISO = BLOCK[0].days[0].iso, lastISO = BLOCK[3].days[6].iso;
+  if (TODAY_ISO < firstISO) {
+    return "Paulie Recomp — Block 1 starts " + pretty(BLOCK[0].days[0].date)
+      + ".\nNothing logged yet. I'll send this once the week's under way.";
+  }
+
+  var w = weekOf(TODAY_ISO);          // null once the block is over
+  var scope = w ? [w] : BLOCK;
+  var wholeBlock = !w;
+  var lines = [], planned = 0, done = 0;
+
+  lines.push(w ? "Paulie Recomp — " + w.wk.name + " (" + w.wk.label + ")"
+               : "Paulie Recomp — Block 1, the whole month");
+
+  scope.forEach(function (bw) {
+    if (wholeBlock) lines.push("", bw.wk.name + " — " + bw.wk.label);
+    bw.days.forEach(function (d) {
+      if (!d.planned && !d.optional) return;
+      var future = d.iso > TODAY_ISO;
+      var r = state[d.iso] || {};
+      // Optional days only appear when they actually happened; a skipped one isn't a miss.
+      if (d.optional && !r.done && !r.note) return;
+      var mark = r.done ? "[x]" : (future ? "[-]" : "[ ]");
+      var title = d.optional ? "Norwegian 4×4 (optional)" : d.title.replace(/&amp;/g, "&");
+      var line = mark + " " + d.dow + " " + pretty(d.date) + " — " + title;
+      if (r.note) line += "  — “" + r.note + "”";
+      lines.push(line);
+      if (!future && d.planned) { planned++; if (r.done) done++; }
+    });
+  });
+
+  lines.push("", done + " of " + planned + " sessions done"
+    + (planned ? " so far." : ".") + (wholeBlock ? " Block finished " + pretty(parseISO(lastISO)) + "." : ""));
+  return lines.join("\n");
+}
+
+function setupSend() {
+  var btn = document.getElementById("sendbtn");
+  var out = document.getElementById("sendout");
+  var hint = document.getElementById("sendhint");
+  btn.addEventListener("click", function () {
+    var text = buildReport();
+    out.textContent = text;
+    out.hidden = false;
+    hint.hidden = true;
+    if (navigator.share) {
+      navigator.share({ text: text }).catch(function () { copyFallback(text, hint); });
+      return;
+    }
+    copyFallback(text, hint);
+  });
+}
+function copyFallback(text, hint) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () {
+      hint.textContent = "Copied. Paste it into a text to Pat.";
+      hint.hidden = false;
+    }).catch(function () {
+      hint.textContent = "Press and hold the text above to copy it, then send it to Pat.";
+      hint.hidden = false;
+    });
+  } else {
+    hint.textContent = "Press and hold the text above to copy it, then send it to Pat.";
+    hint.hidden = false;
+  }
+}
+
+/* ------------------------------------------------------------------- boot */
+
+Array.prototype.forEach.call(document.querySelectorAll("header .open, .panel .open"), wireWhy);
+renderWeeks();
+renderToday();
+renderGoals();
+setupSend();
+</script>
+</body></html>
