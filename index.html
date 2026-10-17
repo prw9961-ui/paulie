@@ -168,7 +168,7 @@ footer { font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line)
     <p class="eyebrow">Block 1 &middot; Oct 19 &ndash; Nov 15, 2026</p>
     <h1>PAULIE</h1>
     <p class="lede">Three lifting days, one long run, and an optional interval day on Tuesday or
-      Thursday. Four weeks: calibrate, load it, push, test. Tap any day for the session and why
+      Wednesday. Four weeks: calibrate, load it, push, test. Tap any day for the session and why
       it's written that way.</p>
   </div>
   <button class="open" type="button" aria-expanded="false" data-why="block">
@@ -231,13 +231,13 @@ footer { font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line)
         <tbody>
           <tr><td>Back</td><td class="num">12</td><td>Mon row + pulldown, Sat two rows</td></tr>
           <tr><td>Chest</td><td class="num">10</td><td>Mon bench, Sat incline press + flye</td></tr>
-          <tr><td>Hamstrings &amp; glutes</td><td class="num">9</td><td>Wed Romanian deadlift, leg curl, back extension</td></tr>
+          <tr><td>Hamstrings &amp; glutes</td><td class="num">9</td><td>Thu Romanian deadlift, leg curl, back extension</td></tr>
           <tr><td>Shoulders</td><td class="num">6</td><td>Mon overhead press, Sat lateral raise</td></tr>
           <tr><td>Biceps</td><td class="num">5</td><td>Mon hammer curl, Sat incline curl</td></tr>
           <tr><td>Triceps</td><td class="num">2</td><td>Sat pushdown &mdash; plus every press you do</td></tr>
-          <tr><td>Core</td><td class="num">10</td><td>Wed Pallof, Sun after the long run</td></tr>
-          <tr><td>Quads</td><td class="num">6</td><td>Wed ATG split squat + leg extension, both full range</td></tr>
-          <tr><td>Calves</td><td class="num">2</td><td>Wed &mdash; plus every mile you run</td></tr>
+          <tr><td>Core</td><td class="num">10</td><td>Thu Pallof, Sun after the long run</td></tr>
+          <tr><td>Quads</td><td class="num">6</td><td>Thu ATG split squat + leg extension, both full range</td></tr>
+          <tr><td>Calves</td><td class="num">2</td><td>Thu &mdash; plus every mile you run</td></tr>
         </tbody>
       </table>
     </div>
@@ -251,6 +251,48 @@ footer { font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line)
         lifting days: the big presses and rows do most of the work for them, and the direct sets are what
         gets squeezed when the week has one fewer session in it. Both are the first things Block&nbsp;2 adds
         back, assuming your knees come through the month quiet.</p>
+    </button>
+  </div>
+</section>
+
+<section class="sec">
+  <h2>Why each day sits where it does</h2>
+  <div class="panel">
+    <p class="thin">Tuesday and Wednesday are yours. Everything else is arranged around them.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Day</th><th>Session</th><th>Why this day</th></tr></thead>
+        <tbody>
+          <tr><td>Mon</td><td>Upper A: heavy</td><td>The day you are most likely to actually show up, so
+            the heaviest bench of the week lives here &mdash; it's the lift your progress gets measured
+            by.</td></tr>
+          <tr><td>Tue</td><td>Off, or the 4&nbsp;&times;&nbsp;4</td><td>The best slot for hard running:
+            yesterday was upper body, so your legs are fresh, and it keeps Wednesday clear.</td></tr>
+          <tr><td>Wed</td><td>Off</td><td>Your second day off, and the backup 4&nbsp;&times;&nbsp;4 slot if
+            Tuesday gets away from you.</td></tr>
+          <tr><td>Thu</td><td>Lower &amp; core</td><td>Two full days of rest in front of it. Leg day is the
+            one session where walking in fresh actually matters for your knees.</td></tr>
+          <tr><td>Fri</td><td>Off</td><td>Sits between leg day and the long run so those two never collide,
+            and sends you into Saturday with fresh shoulders and arms.</td></tr>
+          <tr><td>Sat</td><td>Upper B: volume</td><td>Five days since the last upper session, so the smaller
+            stuff gets real effort instead of leftovers.</td></tr>
+          <tr><td>Sun</td><td>Long run + core</td><td>Two clear days since legs, so you run on legs that
+            aren't wrecked. Also weigh-in day.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="open" type="button" aria-expanded="false" data-why="timing">
+      <h3>What time of day to go</h3>
+      <p class="why" hidden>Short answer: whatever time you'll go every week. Pick one and keep it &mdash;
+        consistency is worth more than any of what follows. If you do have a choice:
+        <strong>Monday and Saturday</strong> are best late afternoon or early evening, when you're warm and
+        strength is at its highest point of the day. <strong>Thursday</strong> especially so: knees and
+        joints are stiffest in the first couple of hours after you wake up, so an early leg day needs a
+        much longer warm-up to feel the same. <strong>Tuesday's 4&nbsp;&times;&nbsp;4</strong> goes
+        anywhere except the two hours before bed &mdash; hard intervals that late leave you wired and cost
+        you sleep. <strong>Sunday's run goes in the morning</strong>, and not for training reasons: it's
+        cooler, it's done before the day fills up, and weigh-in only means something if you step on the
+        scale straight out of bed, before food or water, every single week.</p>
     </button>
   </div>
 </section>
@@ -344,7 +386,7 @@ var SESSIONS = {
        + "will be easiest to see there. The row matches the bench set for set \u2014 pressing a lot without "
        + "pulling as much is how shoulders start hurting six weeks into a program. The easy cardio goes on "
        + "the end of this day rather than any other: it's an upper-body session, so your legs are fresh for "
-       + "it, Wednesday's legs are too beaten up to add to, and Saturday sits the day before your long run.",
+       + "it, Thursday's legs are too beaten up to add to, and Saturday sits the day before your long run.",
     warmup: "5 min bike or easy walk, then three light bench sets of 5 \u2014 the empty bar, 135, then 165.",
     lifts: [
       { nm: "Barbell bench press", pr: "4 \u00d7 5", load: "195 lb",
@@ -415,17 +457,22 @@ var REST_WHY = "A real day off. Walk, stretch, play something, don't lift. Recov
   + "you already did turns into muscle \u2014 it isn't the gap between the useful parts. If you want to "
   + "train, the optional 4\u00d74 lives on this day.";
 
-var FRI_WHY = "Friday is off so Saturday's volume session lands on fresh arms and shoulders, and so the "
-  + "three lifting days sit Monday, Wednesday and Saturday with a clear day between each. Three "
-  + "well-spaced hard sessions beat four crowded ones.";
+var FRI_WHY = "Friday is off because Thursday was legs and Sunday is your long run \u2014 this is the day that "
+  + "keeps those two from running into each other, and it hands Saturday's volume session fresh arms and "
+  + "shoulders. With Tuesday and Wednesday off too, the three lifting days land Monday, Thursday and "
+  + "Saturday, each one with at least a full day in front of it. Three well-spaced hard sessions beat "
+  + "four crowded ones.";
 
 var FOURXFOUR_WHY = "Optional, and the most valuable optional thing on this page. The Norwegian 4\u00d74 is "
   + "the most-studied interval session there is and the most efficient way to raise your VO2 max \u2014 the "
   + "engine behind every run you do, and a big part of why fat loss keeps working. Four minutes is long "
   + "enough to pull your heart rate to the top and hold it there, which 30-second sprints never manage, "
   + "and it's kinder to your knees than sprinting. It gets its own day on purpose: bolted onto the end of a "
-  + "lifting session you'd do a worse version of both. Take Tuesday or Thursday, whichever suits your week "
-  + "\u2014 one a week is the target, and skipping it costs you nothing else in the plan.";
+  + "lifting session you'd do a worse version of both. One a week is the target, and skipping it costs you "
+  + "nothing else in the plan. <strong>Tuesday is the better of your two slots:</strong> it sits the day "
+  + "after an upper-body session, so your legs are fresh for it, and it leaves Wednesday clear before leg "
+  + "day. Wednesday works if Tuesday doesn't \u2014 just know that hard running the day before Thursday "
+  + "means walking into leg day on tired legs, which with your knees is the one trade worth avoiding.";
 
 var WEEKS = [
   {
@@ -579,7 +626,7 @@ function bumpSets(pr, delta) {
   return n + m[2];
 }
 
-/* Mon lift, Tue optional 4x4, Wed lift, Thu optional 4x4, Fri off, Sat lift, Sun long run. */
+/* Mon lift, Tue + Wed optional 4x4, Thu lift, Fri off, Sat lift, Sun long run. */
 function buildDays() {
   var days = [];
   for (var w = 0; w < WEEKS.length; w++) {
@@ -587,7 +634,7 @@ function buildDays() {
     for (var i = 0; i < 7; i++) {
       var date = addDays(monday, i), iso = toISO(date), dow = DOW[i], d = null;
 
-      if (i === 1 || i === 3) {
+      if (i === 1 || i === 2) {
         // Rest, with the 4x4 available on it. Optional: never counted as a missed day.
         var f = wk.fourxfour;
         d = { iso: iso, dow: dow, date: date, kind: "interval",
@@ -603,8 +650,8 @@ function buildDays() {
                     "5 min cool-down."],
               extras: "", loadNote: "", restAlt: REST_WHY };
 
-      } else if (i === 0 || i === 2 || i === 5) {
-        var s = i === 0 ? SESSIONS.upperA : i === 2 ? SESSIONS.lower : SESSIONS.upperB;
+      } else if (i === 0 || i === 3 || i === 5) {
+        var s = i === 0 ? SESSIONS.upperA : i === 3 ? SESSIONS.lower : SESSIONS.upperB;
         d = { iso: iso, dow: dow, date: date, kind: s.kind, title: s.title, planned: true,
               optional: false, mins: s.mins, why: s.why, warmup: s.warmup,
               lifts: liftsFor(s, wk.mods), run: null, extras: "",
@@ -882,7 +929,7 @@ function renderGoals() {
     + '<p class="status">Log in Hevy so we can see it</p></div>');
 
   cards.push('<div class="goal"><h3>The optional 4 &times; 4</h3>'
-    + '<p class="target">Tuesday or Thursday, one a week. Not counted against you — these are bonus, '
+    + '<p class="target">Tuesday or Wednesday, one a week. Not counted against you — these are bonus, '
     + "and the plan works without them.</p>"
     + '<p class="status">' + fours + " done" + (fours >= 4 ? " — all four weeks" : " of 4 possible")
     + "</p></div>");
